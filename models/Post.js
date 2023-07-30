@@ -9,7 +9,7 @@ const PostSchema = new Schema({
   created_by: { type: Schema.Types.ObjectId, required: true, ref: "User" },
   timestamp: { type: Date, default: Date.now() },
   published: { type: Boolean, default: true },
-  comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }]
+  likes: { type: Number, default: 0 }
 })
 
 module.exports = mongoose.model("Post", PostSchema);

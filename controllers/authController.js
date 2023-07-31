@@ -4,16 +4,21 @@ const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
 const passport = require("passport");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken")
+require('dotenv').config();
 
 exports.log_in_post = function (req, res, next) {
-  passport.authenticate('local', function (err, user, info) {
+  passport.authenticate('local', {session: false}, function (err, user, info) {
     if (err) { return next(err) }
     if (!user) {
       return res.status(200).json({ message: info.message });
     }
     req.logIn(user, function (err) {
       if (err) { return next(err); }
-      return res.status(200).json({ message: "Login successful" });
+      console.log(user)
+      const body = {_id: user._id, username: user.username}
+      const token = jwt.sign({user: body}, process.env.SECRET_KEY, {expiresIn: '1d'})
+      return res.status(200).json({ message: "Login successful", token });
     });
   })(req, res, next);
 }

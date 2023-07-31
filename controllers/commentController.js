@@ -1,4 +1,3 @@
-const Post = require('../models/Post');
 const Comment = require('../models/Comment')
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
@@ -14,26 +13,23 @@ exports.add_comment = [
     .isLength({ min: 1 }),
 
   asyncHandler(async(req, res, next) => {
-    if (!res.locals.currentUser) {
-      return res.status(401).json({ message: "You must be logged in to write a comment" });
-    } else {
-      const errors = validationResult(req);
-      
-      if (!errors.isEmpty()) {
-        return res.status(200).json({ errors: errors.errors })
-      }
-
-      const comment = new Comment({
-        content: req.body.content,
-        created_by: res.locals.currentUser._id,
-        post: req.params.pid
-      })
-  
-      await comment.save();
-      return res.status(200).json({ message: "Comment saved successfully" })
+    const errors = validationResult(req);
+    
+    if (!errors.isEmpty()) {
+      return res.status(200).json({ errors: errors.errors })
     }
 
-  })
+    const comment = new Comment({
+      content: req.body.content,
+      created_by: req.user._id,
+      post: req.params.pid
+    })
+
+    await comment.save();
+    return res.status(200).json({ message: "Comment saved successfully" })
+  }
+
+  )
 ]
 
 exports.get_single_comment = asyncHandler(async(req, res, next) => {
@@ -46,10 +42,6 @@ exports.get_single_comment = asyncHandler(async(req, res, next) => {
 })
 
 exports.update_comment_likes = asyncHandler(async(req, res, next) => {
-  if (!res.locals.currentUser) {
-    return res.status(401).json({ message: "Please log in to like a comment" })
-  }
-
   const comment = await Comment.findById(req.params.cid);
 
   if (comment == null) {

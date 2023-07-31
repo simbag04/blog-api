@@ -1,6 +1,7 @@
 const Post = require('../models/Post');
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
+const passport = require('passport');
 
 exports.get_all_posts = asyncHandler(async(req, res, next) => {
   const posts = await Post.find().exec();
@@ -17,23 +18,20 @@ exports.add_post = [
     .isLength({min: 1}),
 
   asyncHandler(async(req, res, next) => {
-    if (!res.locals.currentUser) {
-      return res.status(401).json({ message: "You must login to create a post" });
-    } else {
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        res.status(200).json({ errors: errors.errors })
-      }
-
-      const post = new Post({
-        title: req.body.title,
-        content: req.body.content,
-        created_by: res.locals.currentUser._id
-      })
-
-      await post.save();
-      return res.status(200).json({ message: "Succesful" })
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(200).json({ errors: errors.errors })
     }
+
+    const post = new Post({
+      title: req.body.title,
+      content: req.body.content,
+      created_by: req.user._id
+    })
+
+    await post.save();
+    return res.status(200).json({ message: "Succesful" })
+
   })
 ]
 
@@ -53,10 +51,6 @@ exports.delete_post = asyncHandler(async(req, res, next) => {
 })
 
 exports.update_post_likes = asyncHandler(async(req, res, next) => {
-  if (!res.locals.currentUser) {
-    return res.status(401).json({ message: "Please log in to like a post" })
-  }
-
   const post = await Post.findById(req.params.pid);
 
   if (post == null) {
@@ -68,10 +62,6 @@ exports.update_post_likes = asyncHandler(async(req, res, next) => {
 })
 
 exports.update_post_publish_status = asyncHandler(async(req, res, next) => {
-  if (!res.locals.currentUser) {
-    return res.status(401).json({ message: "Please log in to change publish status" })
-  }
-
   const post = await Post.findById(req.params.pid);
 
   if (post == null) {

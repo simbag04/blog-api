@@ -3,8 +3,8 @@ const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 
 exports.get_all_comments = asyncHandler(async(req, res, next) => {
-  const comments = await Comment.find({post: req.params.pid});
-  return res.status(200).json({ comments });
+  const comments = await Comment.find({post: req.params.pid}).populate("created_by");
+  return res.status(200).json(JSON.stringify(comments));
 })
 
 exports.add_comment = [

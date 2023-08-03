@@ -18,6 +18,9 @@ const User = require('./models/User');
 
 const indexRouter = require('./routes/router');
 
+const compression = require("compression");
+const helmet = require("helmet"); 
+
 const app = express();
 
 const cors = require('cors');
@@ -100,9 +103,10 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(helmet());
+app.use(compression()); // Compress all routes
 
-app.use('/', indexRouter);
-app.get('/', (req, res) => res.send("HELLo"))
+app.use("/", indexRouter);
 
 // error handler
 app.use(function (err, req, res, next) {

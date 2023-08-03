@@ -24,9 +24,7 @@ const helmet = require("helmet");
 const app = express();
 
 const cors = require('cors');
-app.use(cors({
-  origin: 'http://localhost:3000'
-}));
+
 
 // Set up mongoose connection
 mongoose.set("strictQuery", false);
@@ -106,7 +104,26 @@ app.use(cookieParser());
 app.use(helmet());
 app.use(compression()); // Compress all routes
 
-app.use("/", indexRouter);
+let allowedOrigins=['https://simbag04.github.io/blog-client/', 'https://simbag04.github.io', 'http://localhost:3000']
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
+
+/*
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://simbag04.github.io/blog-client');
+  next();
+});
+*/
+
+app.use('/', indexRouter);
 
 // error handler
 app.use(function (err, req, res, next) {

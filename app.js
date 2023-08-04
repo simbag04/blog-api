@@ -106,6 +106,7 @@ app.use(compression()); // Compress all routes
 
 let allowedOrigins=['https://simbag04.github.io/blog-client/', 'https://simbag04.github.io', 'http://localhost:3000']
 
+
 app.use(cors({
   origin: function (origin, callback) {
     if (allowedOrigins.includes(origin) || !origin) {
@@ -115,13 +116,6 @@ app.use(cors({
     }
   }
 }));
-
-/*
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://simbag04.github.io/blog-client');
-  next();
-});
-*/
 
 app.use('/', indexRouter);
 

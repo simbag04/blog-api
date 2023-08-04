@@ -4,7 +4,7 @@ const { body, validationResult } = require("express-validator");
 const passport = require('passport');
 
 exports.get_all_posts = asyncHandler(async(req, res, next) => {
-  const posts = await Post.find().exec();
+  const posts = await Post.find().populate("created_by").exec();
   res.status(200).json(JSON.stringify(posts));
 })
 

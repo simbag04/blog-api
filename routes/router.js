@@ -15,9 +15,7 @@ router.post('/posts', passport.authenticate('jwt', {session: false}), postsContr
 
 router.get('/posts/:pid', postsController.get_single_post);
 router.delete('/posts/:pid', passport.authenticate('jwt', {session: false}), postsController.delete_post);
-router.put('/posts/:pid', passport.authenticate('jwt', {session: false}), postsController.update_post_likes)
-
-router.put('/posts/:pid/publish', passport.authenticate('jwt', {session: false}), postsController.update_post_publish_status);
+router.put('/posts/:pid', passport.authenticate('jwt', {session: false}), postsController.update_post)
 
 router.get('/posts/:pid/comments', commentController.get_all_comments);
 router.post('/posts/:pid/comments', passport.authenticate('jwt', {session: false}),  commentController.add_comment);
